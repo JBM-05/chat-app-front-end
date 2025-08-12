@@ -1,5 +1,5 @@
 import axios from "axios";
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:5001/",
+  baseURL: import.meta.env.base_Url,
   withCredentials: true,
 });

@@ -35,7 +35,7 @@ export interface UserAuthState {
   disconnectSocket: () => void;
 }
 const BASE_URL =
-  import.meta.env.MODE === "development" ? "http://localhost:5001" : "/";
+  import.meta.env.base_Url ;
 
 const UserAuthStore = create<UserAuthState>((set, get) => ({
   userAuth: null,
