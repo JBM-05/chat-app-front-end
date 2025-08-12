@@ -35,7 +35,7 @@ export interface UserAuthState {
   disconnectSocket: () => void;
 }
 const BASE_URL =
-  import.meta.env.base_Url ;
+  import.meta.env.VITE_BASE_URL ;
 
 const UserAuthStore = create<UserAuthState>((set, get) => ({
   userAuth: null,
