@@ -30,7 +30,7 @@ export interface UserAuthState {
   signUp: (data: data) => Promise<void>;
   logOut: () => Promise<void>;
   logIn: (data: data) => Promise<void>;
-  updateProfile: (data: data) => Promise<void>;
+  updateProfile: (formData:FormData) => Promise<void>;
   connectSocket: () => void;
   disconnectSocket: () => void;
 }
@@ -119,27 +119,30 @@ const UserAuthStore = create<UserAuthState>((set, get) => ({
       set({ isLoggingIn: false });
     }
   },
-  updateProfile: async (data) => {
-    set({ isUpdatingProfile: true });
-    try {
-      const res = await axiosInstance.put("/auth/update-profile", data);
-      const { user } = res.data;
-      set({ userAuth: { ...user } });
-      toast.success("Profile updated successfully!");
-    } catch (error) {
-      console.error("Update profile error:", error);
-      if (error && typeof error === "object" && "response" in error) {
-        const err = error as { response?: { data?: { message?: string } } };
-        toast.error(
-          `Update failed: ${err.response?.data?.message || "Unknown error"}`
-        );
-      } else {
-        toast.error("Update failed: Unknown error");
-      }
-    } finally {
-      set({ isUpdatingProfile: false });
+ updateProfile: async (formData: FormData) => {
+  set({ isUpdatingProfile: true });
+  try {
+    const res = await axiosInstance.put("/auth/update-profile", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    const { user } = res.data;
+    set({ userAuth: { ...user } });
+    toast.success("Profile updated successfully!");
+  } catch (error) {
+    console.error("Update profile error:", error);
+    if (error && typeof error === "object" && "response" in error) {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(
+        `Update failed: ${err.response?.data?.message || "Unknown error"}`
+      );
+    } else {
+      toast.error("Update failed: Unknown error");
     }
-  },
+  } finally {
+    set({ isUpdatingProfile: false });
+  }
+},
+
   connectSocket: () => {
     const { userAuth } = get();
     if (!userAuth || get().socket?.connected) return;

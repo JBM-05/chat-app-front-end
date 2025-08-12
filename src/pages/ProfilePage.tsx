@@ -9,19 +9,19 @@ const ProfilePage = () => {
   type ImageUploadEvent = React.ChangeEvent<HTMLInputElement>
 
   const handleImageUpload = async (e: ImageUploadEvent): Promise<void> => {
-    const file: File | undefined = e.target.files?.[0];
-    if (!file) return;
+  const file: File | undefined = e.target.files?.[0];
+  if (!file) return;
 
-    const reader: FileReader = new FileReader();
+  // For preview: create a temporary local URL for the selected file
+  const previewUrl = URL.createObjectURL(file);
+  setSelectedImg(previewUrl);
 
-    reader.readAsDataURL(file);
+  // Send as multipart/form-data (no base64)
+  const formData = new FormData();
+  formData.append("profilePic", file);
 
-    reader.onload = async (): Promise<void> => {
-      const base64Image = reader.result as string;
-      setSelectedImg(base64Image);
-      await updateProfile({ profilePic: base64Image });
-    };
-  };
+  await updateProfile(formData);
+};
 
   return (
     <div className="h-screen pt-20">
