@@ -18,6 +18,12 @@ const UserMessageStore = create<UserMessageStoreType>((set,get) => ({
     } catch (error) {
       console.error("Error getting users:", error);
       toast.error("Failed to load users.");
+      if (error && typeof error === "object" && "response" in error) {
+        const err = error as { response?: { data?: { message?: string } } };
+        toast.error(`Error getting messages: ${err.response?.data?.message || "Unknown error"}`);
+      } else {
+        toast.error("Error getting messages: Unknown error");
+      }
     } finally {
       set({ isGettingUsers: false });
     }
@@ -32,12 +38,7 @@ const UserMessageStore = create<UserMessageStoreType>((set,get) => ({
     } catch (error) {
       console.error("Error getting messages:", error);
       toast.error("Failed to load messages.");
-      if (error && typeof error === "object" && "response" in error) {
-        const err = error as { response?: { data?: { message?: string } } };
-        toast.error(`Error getting messages: ${err.response?.data?.message || "Unknown error"}`);
-      } else {
-        toast.error("Error getting messages: Unknown error");
-      }
+      
     } finally {
       set({ isGettingMessages: false });
     }
